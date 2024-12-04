@@ -49,4 +49,4 @@ jobs:
         signed_url=$(aws s3 presign s3://testingwq1234/123/Untitled.rtf --expires-in 604800)
         echo "Signed URL: $signed_url"
         echo "signed_url=$signed_url" >> $GITHUB_ENV
-        echo "GITGUB: $GITHUB_ENV"
+        cat $GITHUB_ENV
