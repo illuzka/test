@@ -18,6 +18,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # Step 2: Sync files to S3
+#    - name: Upload report to S3
+#      uses: jakejarvis/s3-sync-action@master
+#      env:
+#        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+#        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#      with:
+#        source_dir: allure-report
+#        dest_dir: ${{ env.ENVIRONMENT }}/${{ env.DATE }}
+
     - name: Configure AWS credentials with OIDC
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -25,16 +36,20 @@ jobs:
         aws-region: us-east-1
 
 
-#    - name: Generate signed URL for S3 object
-#      run: |
-#        signed_url=$(aws s3 presign s3://testingwq1234/123/Untitled.rtf --expires-in 604800)
-#        echo "SIGNED_URL=$signed_url" >> $GITHUB_ENV
+#    # Step 3: Generate Signed URL
+#    - name: Generate signed URL
+#      uses: aws-actions/cli-configure@v2
+#      with:
+#        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        aws-region: us-east-1 # Change this to your S3 bucket's region
 
-    - name: Set test results variables
-      if: ${{ always() }}
+    - name: Generate signed URL for S3 object
       run: |
-        echo "REPORT_URL=$(aws s3 presign s3://testingwq1234/123/Untitled.rtf --expires-in 604800)" >> $GITHUB_ENV
-     
+        signed_url=$(aws s3 presign s3://testingwq1234/123/Untitled.rtf --expires-in 604800)
+        echo "SIGNED_URL=$signed_url" >> $GITHUB_ENV
+   
     - name: Use the pre-signed URL
       run: |
-        cat $GITHUB_ENV
+        echo "Signed URL: $SIGNED_URL"
+        curl "$SIGNED_URL"
