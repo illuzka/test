@@ -47,15 +47,12 @@ jobs:
     - name: Generate signed URL for S3 object
       run: |
         signed_url=$(aws s3 presign s3://testingwq1234/123/Untitled.rtf --expires-in 604800)
-        echo "::set-output name=url::$signed_url"
-        
-        # echo "Signed URL: $signed_url"
-        # echo "signed_url=$signed_url" >> $GITHUB_ENV
-        # cat $GITHUB_ENV
+        echo "SIGNED_URL=$signed_url" >> $GITHUB_ENV
+   
     - name: Use the pre-signed URL
       run: |
-        echo "The signed URL is ready for use."
-        curl "${{ steps.presign.outputs.url }}" # Use the URL programmatically
+        echo "Signed URL: $SIGNED_URL"
+        curl "$SIGNED_URL"
 
 
 
